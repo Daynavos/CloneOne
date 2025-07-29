@@ -55,7 +55,7 @@ public class FlightController : MonoBehaviour
 
     private void MovingBasic()
     {
-        _rigidbody.MovePosition(_rigidbody.position + transform.forward * _moveValue.y *);
+        _rigidbody.MovePosition(_rigidbody.position + transform.forward * _moveValue.y );
     }
 
     private void Looking()
