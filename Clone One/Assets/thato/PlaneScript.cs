@@ -20,8 +20,8 @@ public class PlaneScript: MonoBehaviour
 
     [Header("Post-Crash Behavior")]
     public GameObject activateAfterCrash;
-    public GameObject activateAfterCrashii;// GameObject A
-    public GameObject deactivateAfterCrash; // GameObject B
+    public GameObject activateAfterCrashii;
+    public GameObject deactivateAfterCrash; 
     public GameObject deactivateAfterCrashii;
 
     private Rigidbody rb;
@@ -71,7 +71,7 @@ public class PlaneScript: MonoBehaviour
 
     void HandleThrust()
     {
-        float throttleInput = Input.GetAxis("Vertical"); // W = 1, S = -1
+        float throttleInput = Input.GetAxis("Vertical"); 
         currentSpeed += throttleInput * acceleration * Time.fixedDeltaTime;
         currentSpeed = Mathf.Clamp(currentSpeed, 0f, maxSpeed);
 
@@ -95,17 +95,13 @@ public class PlaneScript: MonoBehaviour
 
         Debug.Log("Plane is destroyed! Falling from the sky.");
 
-        // Enable gravity so the plane falls
         rb.useGravity = true;
 
-        // Stop all controlled movement
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         currentSpeed = 0f;
 
-        // Optional: add VFX or sound here
 
-        // Start delayed state change
         StartCoroutine(PostCrashSequence());
     }
 

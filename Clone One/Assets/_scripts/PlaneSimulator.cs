@@ -51,22 +51,20 @@ public class PlaneSimulator : MonoBehaviour
 
     void HandleThrust()
     {
-        float throttleInput = Input.GetAxis("Vertical"); // W = 1, S = -1
+        float throttleInput = Input.GetAxis("Vertical"); 
         currentSpeed += throttleInput * acceleration * Time.fixedDeltaTime;
         currentSpeed = Mathf.Clamp(currentSpeed, 0f, maxSpeed);
 
-        // Move forward in camera direction (not flattened)
         Vector3 forward = planeCamera.transform.forward;
         rb.linearVelocity = forward * currentSpeed;
 
-        currentSpeed *= drag; // simulate basic drag
+        currentSpeed *= drag; 
     }
 
     void AlignWithCamera()
     {
         if (planeCamera == null) return;
 
-        // Align rotation smoothly with camera's full rotation (pitch, yaw, roll)
         Quaternion targetRotation = Quaternion.LookRotation(planeCamera.transform.forward, planeCamera.transform.up);
         rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * 2f));
     }

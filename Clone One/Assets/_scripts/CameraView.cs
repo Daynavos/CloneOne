@@ -9,7 +9,7 @@ public class CameraView : MonoBehaviour
     private float xRotation = 0f;
 
     [HideInInspector]
-    public float yawInput = 0f; // <-- ADD THIS
+    public float yawInput = 0f;
 
     void Start()
     {
@@ -21,14 +21,12 @@ public class CameraView : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-        yawInput = mouseX; // <-- STORE THIS FOR OTHER SCRIPTS
+        yawInput = mouseX; 
 
-        // Rotate the camera up/down
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -clampAngle, clampAngle);
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
-        // Rotate the plane body left/right
         playerBody.Rotate(Vector3.up * mouseX);
     }
 }
