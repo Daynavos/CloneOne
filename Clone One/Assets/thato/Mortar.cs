@@ -5,9 +5,9 @@ using System.Collections;
 public class Mortar : MonoBehaviour
 {
     [Header("References")]
-    public Transform turretTop;              // The entire turret that rotates (cylinder)
-    public Transform firePoint;              // Where the projectile spawns
-    public Transform rotationPivot;          // The pivot point at the base (assign in inspector)
+    public Transform turretTop;              
+    public Transform firePoint;              
+    public Transform rotationPivot;          
 
     public GameObject projectilePrefab;
 
@@ -43,23 +43,17 @@ public class Mortar : MonoBehaviour
 
         if (direction.sqrMagnitude < 0.001f) return;
 
-        // Calculate target rotation so the turret forward faces the player
         Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        // Smoothly interpolate rotation from current to target
         Quaternion newRotation = Quaternion.Slerp(turretTop.rotation, targetRotation, Time.deltaTime * rotationSpeed);
 
-        // Calculate offset from pivot to turretTop position BEFORE rotation
         Vector3 pivotToTurret = turretTop.position - pivotPos;
 
-        // Rotate that offset by the change in rotation
         Quaternion rotationChange = newRotation * Quaternion.Inverse(turretTop.rotation);
         Vector3 rotatedOffset = rotationChange * pivotToTurret;
 
-        // Set the new position so base stays at pivot
         turretTop.position = pivotPos + rotatedOffset;
 
-        // Apply the new rotation
         turretTop.rotation = newRotation;
     }
 

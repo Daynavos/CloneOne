@@ -59,7 +59,6 @@ public class JailBreak : MonoBehaviour, IDamageable
                 Vector3 bodyPosition = transform.position;
                 Vector3 lookDirection = (targetPosition - bodyPosition).normalized;
 
-                // NPC rotates only horizontally (Y axis)
                 Vector3 flatLookDir = new Vector3(lookDirection.x, 0f, lookDirection.z);
                 if (flatLookDir.sqrMagnitude > 0.01f)
                 {
@@ -67,7 +66,6 @@ public class JailBreak : MonoBehaviour, IDamageable
                     transform.rotation = Quaternion.Slerp(transform.rotation, npcYawRotation, Time.deltaTime * 5f);
                 }
 
-                // Gun point (firePoint) looks at full target position (includes vertical aiming)
                 if (firePoint != null)
                 {
                     firePoint.LookAt(targetPosition);
