@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,8 +20,12 @@ public class FlightController : MonoBehaviour
     private Vector3 clickHitPoint;
     private Quaternion targetRotation;
     private bool isRotating = false;
-    public Color targetColor = Color.red;
 
+    private float shootForce = 5f;
+    public GameObject bullet;
+    
+    public GameObject LeftClickStateObject;
+    private LeftClickState leftClickState;
     void Awake()
     {
         controls = new InputSystem_Actions();
@@ -30,6 +35,11 @@ public class FlightController : MonoBehaviour
 
         controls.Flying.Zoom.performed += ctx => zoomInput = ctx.ReadValue<float>();
         controls.Flying.Zoom.canceled += ctx => zoomInput = 0;
+    }
+
+    private void Start()
+    {
+        leftClickState = LeftClickStateObject.GetComponent<LeftClickState>();
     }
 
     void OnEnable() => controls.Flying.Enable();
@@ -63,14 +73,51 @@ public class FlightController : MonoBehaviour
                 }
             }
         }
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            if (leftClickState.currentLCstate == LeftClickState.leftClickState.bullet)
+            {
+                Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+                Vector3 direction;
+
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    direction = hit.point - ship.transform.position;
+                }
+                else
+                {
+                    direction = ray.direction;
+                }
+
+                GameObject newBubble = Instantiate(bullet, ship.transform.position, Quaternion.identity);
+                Rigidbody newBubbleRb = newBubble.GetComponent<Rigidbody>();
+                newBubbleRb.linearVelocity = direction * shootForce;
+            }
+
+            if (leftClickState.currentLCstate == LeftClickState.leftClickState.beams)
+            {
+                Debug.Log("beam");
+                return;
+            }
+
+            if (leftClickState.currentLCstate == LeftClickState.leftClickState.none)
+            {
+                Debug.Log("none");
+                return;
+            }
+        }
         
         if (isRotating)
         {
+            
             planet.transform.rotation = Quaternion.RotateTowards(
                 planet.transform.rotation,
                 targetRotation,
                 rotationSpeed * Time.deltaTime
             );
+            
 
             if (Quaternion.Angle(planet.transform.rotation, targetRotation) < 0.1f)
             {
@@ -89,7 +136,7 @@ public class FlightController : MonoBehaviour
         Vector3 toDirection = (ship.transform.position - planetCenter).normalized;
 
         Quaternion rotationDelta = Quaternion.FromToRotation(fromDirection, toDirection);
-
+            
         targetRotation = rotationDelta * planet.transform.rotation;
         isRotating = true;
     }
