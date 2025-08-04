@@ -3,77 +3,96 @@ using UnityEngine.InputSystem;
 
 public class FlightController : MonoBehaviour
 {
-    public InputActionAsset asset;
-    
-    private InputAction _moveAction;
-    private InputAction _lookAction;
-    private InputAction _upThrust;
-    private InputAction _downThrust;
-    
-    private Vector2 _moveVector;
-    private Vector2 _lookVector;
-    private float _upThrustInputFloat;
-    private float _downThrustInputFloat;
+    public GameObject ship;
+    public GameObject planet;
+    public float rotationSpeed = 20f;
+    public float turnSpeed = 90f;
+    public float zoomSpeed = 10f;
+    public float minScale = 0.1f;
+    public float maxScale = 5f;
 
-    [SerializeField] private float moveMultiplier = 5;
-    [SerializeField] private float lookMultiplier = 5;
-    [SerializeField] private float upThrustMultiplier = 2;
-    [SerializeField] private float downThrustMultiplier = 2;
+    private InputSystem_Actions controls;
+    private Vector2 moveInput;
+    private float zoomInput;
     
-    private Rigidbody _rigidbody;
+    public Camera cam;
+    private Vector3 clickHitPoint;
+    private Quaternion targetRotation;
+    private bool isRotating = false;
+    public Color targetColor = Color.red;
 
-    private void OnEnable()
+    void Awake()
     {
-        asset.FindActionMap("Flying").Enable();
+        controls = new InputSystem_Actions();
+
+        controls.Flying.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        controls.Flying.Move.canceled += ctx => moveInput = Vector2.zero;
+
+        controls.Flying.Zoom.performed += ctx => zoomInput = ctx.ReadValue<float>();
+        controls.Flying.Zoom.canceled += ctx => zoomInput = 0;
     }
 
-    private void OnDisable()
-    {
-        asset.FindActionMap("Flying").Disable(); 
-    }
-    private void Awake()
-    {
-        _moveAction = InputSystem.actions.FindAction("Move");
-        _lookAction = InputSystem.actions.FindAction("Look");
-        _upThrust = InputSystem.actions.FindAction("UpThrust");
-        _downThrust = InputSystem.actions.FindAction("DownThrust");
-        _rigidbody = GetComponent<Rigidbody>();
-    }
+    void OnEnable() => controls.Flying.Enable();
+    void OnDisable() => controls.Flying.Disable();
 
     void Update()
     {
-        _moveVector = _moveAction.ReadValue<Vector2>();
-        _lookVector = _lookAction.ReadValue<Vector2>();
-        _upThrustInputFloat = _upThrust.ReadValue<float>();
-        _downThrustInputFloat = _downThrust.ReadValue<float>();
-    }
+        // Turn ship (A/D)
+        ship.transform.Rotate(Vector3.forward.normalized * -1 *moveInput.x * turnSpeed * Time.deltaTime, Space.Self);
 
-    void FixedUpdate()
-    {
-        MovingBasic();
-        Looking();
-        UpThrust();
-        DownThrust();
-    }
+        // Move forward/backward (W/S) → rotate planet
+        planet.transform.Rotate(ship.transform.right.normalized, -moveInput.y * rotationSpeed * Time.deltaTime, Space.World);
 
-    private void MovingBasic()
-    {
-        _rigidbody.MovePosition(_rigidbody.position + transform.forward * _moveVector.y + transform.right * _moveVector.x );
-    }
 
-    private void UpThrust()
-    {
-        _rigidbody.MovePosition(_rigidbody.position + transform.up * (_upThrustInputFloat * upThrustMultiplier));
-    }
-
-    private void DownThrust()
-    {
-        _rigidbody.MovePosition(_rigidbody.position + transform.up * (_downThrustInputFloat * downThrustMultiplier * -1));
-
-    }
-
-    private void Looking()
-    {
+        // Zoom (scroll)
+        if (zoomInput != 0)
+        {
+            Vector3 newScale = planet.transform.localScale + Vector3.one * zoomInput * zoomSpeed * Time.deltaTime;
+            newScale = Vector3.Max(Vector3.one * minScale, Vector3.Min(Vector3.one * maxScale, newScale));
+            planet.transform.localScale = newScale;
+        }
         
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                if (hit.collider.gameObject == planet)
+                {
+                    RotatePlanetToClick(hit);
+                }
+            }
+        }
+        
+        if (isRotating)
+        {
+            planet.transform.rotation = Quaternion.RotateTowards(
+                planet.transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime
+            );
+
+            if (Quaternion.Angle(planet.transform.rotation, targetRotation) < 0.1f)
+            {
+                planet.transform.rotation = targetRotation;
+                isRotating = false;
+            }
+        }
     }
+
+    void RotatePlanetToClick(RaycastHit hit)
+    {
+        Vector3 hitPoint = hit.point;
+        Vector3 planetCenter = planet.transform.position;
+
+        Vector3 fromDirection = (hitPoint - planetCenter).normalized;
+        Vector3 toDirection = (ship.transform.position - planetCenter).normalized;
+
+        Quaternion rotationDelta = Quaternion.FromToRotation(fromDirection, toDirection);
+
+        targetRotation = rotationDelta * planet.transform.rotation;
+        isRotating = true;
+    }
+
+
 }
