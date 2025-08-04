@@ -9,7 +9,7 @@ public class FlightController : MonoBehaviour
     public float turnSpeed = 90f;
     public float zoomSpeed = 10f;
     public float minScale = 0.1f;
-    public float maxScale = 5f;
+    public float maxScale = 30f;
 
     private InputSystem_Actions controls;
     private Vector2 moveInput;
@@ -52,7 +52,7 @@ public class FlightController : MonoBehaviour
             planet.transform.localScale = newScale;
         }
         
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
             if (Physics.Raycast(ray, out RaycastHit hit))
