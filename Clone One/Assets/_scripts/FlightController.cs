@@ -23,9 +23,13 @@ public class FlightController : MonoBehaviour
 
     private float shootForce = 5f;
     public GameObject bullet;
+
+    private LineRenderer lineRenderer;
     
     public GameObject LeftClickStateObject;
     private LeftClickState leftClickState;
+    
+    
     void Awake()
     {
         controls = new InputSystem_Actions();
@@ -37,14 +41,31 @@ public class FlightController : MonoBehaviour
         controls.Flying.Zoom.canceled += ctx => zoomInput = 0;
     }
 
-    private void Start()
-    {
-        leftClickState = LeftClickStateObject.GetComponent<LeftClickState>();
-    }
 
     void OnEnable() => controls.Flying.Enable();
     void OnDisable() => controls.Flying.Disable();
 
+    void Start()
+    {
+        leftClickState = LeftClickStateObject.GetComponent<LeftClickState>();
+        
+        // Add a LineRenderer component
+        lineRenderer = gameObject.AddComponent<LineRenderer>();
+
+        // Set the material
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+
+        // Set the color
+        lineRenderer.startColor = Color.red;
+        lineRenderer.endColor = Color.green;
+
+        // Set the width
+        lineRenderer.startWidth = 0.1f;
+        lineRenderer.endWidth = 0.1f;
+
+        // Set the number of vertices
+        lineRenderer.positionCount = 2;
+    }
     void Update()
     {
         // Turn ship (A/D)
@@ -98,8 +119,22 @@ public class FlightController : MonoBehaviour
 
             if (leftClickState.currentLCstate == LeftClickState.leftClickState.beams)
             {
-                Debug.Log("beam");
-                return;
+                Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    if (hit.collider.gameObject.CompareTag("Bear"))
+                    {
+                        lineRenderer.enabled = true;
+                        // Set the positions of the vertices
+                        lineRenderer.SetPosition(0, ship.transform.position);
+                        lineRenderer.SetPosition(1, hit.point);
+                        //lineRenderer.SetPosition(2, new Vector3(2, 0, 0));
+                        
+                        //var step =  speed * Time.deltaTime; // calculate distance to move
+                        //hit.collider.gameObject.transform.position =
+                            //Vector3.MoveTowards(transform.position, ship.transform.position, step);
+                    }
+                }
             }
 
             if (leftClickState.currentLCstate == LeftClickState.leftClickState.none)
@@ -108,10 +143,14 @@ public class FlightController : MonoBehaviour
                 return;
             }
         }
+
+        if (Mouse.current.leftButton.wasReleasedThisFrame)
+        {
+            lineRenderer.enabled = false;
+        }
         
         if (isRotating)
         {
-            
             planet.transform.rotation = Quaternion.RotateTowards(
                 planet.transform.rotation,
                 targetRotation,
