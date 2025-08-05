@@ -34,6 +34,14 @@ public class Mortar : MonoBehaviour
         RotateTurretTowardsPlayer();
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Convict"))
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void RotateTurretTowardsPlayer()
     {
         if (player == null || turretTop == null || rotationPivot == null) return;
