@@ -25,10 +25,15 @@ public class FlightController : MonoBehaviour
     public GameObject bullet;
 
     private LineRenderer lineRenderer;
+    private bool isAbducting = false;
     
     public GameObject LeftClickStateObject;
     private LeftClickState leftClickState;
+
+    public GameObject GameManagerObj;
+    private GameStateMan gameStateMan;
     
+    public float speed = 1.0f;
     
     void Awake()
     {
@@ -47,6 +52,8 @@ public class FlightController : MonoBehaviour
 
     void Start()
     {
+        
+        gameStateMan = GameManagerObj.GetComponent<GameStateMan>();
         leftClickState = LeftClickStateObject.GetComponent<LeftClickState>();
         
         // Add a LineRenderer component
@@ -65,17 +72,18 @@ public class FlightController : MonoBehaviour
 
         // Set the number of vertices
         lineRenderer.positionCount = 2;
+        
+        lineRenderer.enabled = false;
     }
     void Update()
     {
-        // Turn ship (A/D)
-        ship.transform.Rotate(Vector3.forward.normalized * -1 *moveInput.x * turnSpeed * Time.deltaTime, Space.Self);
-
-        // Move forward/backward (W/S) → rotate planet
+        //MOVE
+        planet.transform.Rotate(Vector3.forward.normalized *moveInput.x * turnSpeed * Time.deltaTime, Space.World);
+        
+        //TURN
         planet.transform.Rotate(ship.transform.right.normalized, -moveInput.y * rotationSpeed * Time.deltaTime, Space.World);
 
-
-        // Zoom (scroll)
+        //ZOOM
         if (zoomInput != 0)
         {
             Vector3 newScale = planet.transform.localScale + Vector3.one * zoomInput * zoomSpeed * Time.deltaTime;
@@ -83,20 +91,23 @@ public class FlightController : MonoBehaviour
             planet.transform.localScale = newScale;
         }
         
+        //MOVE with CLICK
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                if (hit.collider.gameObject == planet)
+                if (hit.collider.gameObject.CompareTag("planet"))
                 {
                     RotatePlanetToClick(hit);
                 }
             }
         }
 
+        //SHOOT or ABDUCT
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
+            //SHOOT
             if (leftClickState.currentLCstate == LeftClickState.leftClickState.bullet)
             {
                 Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -116,27 +127,13 @@ public class FlightController : MonoBehaviour
                 Rigidbody newBubbleRb = newBubble.GetComponent<Rigidbody>();
                 newBubbleRb.linearVelocity = direction * shootForce;
             }
-
+            //ABDUCT
             if (leftClickState.currentLCstate == LeftClickState.leftClickState.beams)
-            {
-                Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-                if (Physics.Raycast(ray, out RaycastHit hit))
-                {
-                    if (hit.collider.gameObject.CompareTag("Bear"))
-                    {
-                        lineRenderer.enabled = true;
-                        // Set the positions of the vertices
-                        lineRenderer.SetPosition(0, ship.transform.position);
-                        lineRenderer.SetPosition(1, hit.point);
-                        //lineRenderer.SetPosition(2, new Vector3(2, 0, 0));
-                        
-                        //var step =  speed * Time.deltaTime; // calculate distance to move
-                        //hit.collider.gameObject.transform.position =
-                            //Vector3.MoveTowards(transform.position, ship.transform.position, step);
-                    }
-                }
+            { 
+                isAbducting = true; 
+                lineRenderer.enabled = true;
             }
-
+            //NONE
             if (leftClickState.currentLCstate == LeftClickState.leftClickState.none)
             {
                 Debug.Log("none");
@@ -146,7 +143,29 @@ public class FlightController : MonoBehaviour
 
         if (Mouse.current.leftButton.wasReleasedThisFrame)
         {
+            isAbducting = false;
             lineRenderer.enabled = false;
+        }
+
+        if (isAbducting)
+        {
+            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                lineRenderer.enabled = true;
+                lineRenderer.SetPosition(0, ship.transform.position);
+                lineRenderer.SetPosition(1, hit.point);
+                
+                if (hit.collider.gameObject.CompareTag("Bear"))
+                {
+                    Debug.Log("bear");
+                    var bearObject = hit.collider.gameObject; 
+                    float step = speed * Time.deltaTime;
+                    bearObject.transform.position = Vector3.MoveTowards(bearObject.transform.position, ship.transform.position, step);
+
+                    gameStateMan.goToMap();
+                }
+            }
         }
         
         if (isRotating)
@@ -157,7 +176,6 @@ public class FlightController : MonoBehaviour
                 rotationSpeed * Time.deltaTime
             );
             
-
             if (Quaternion.Angle(planet.transform.rotation, targetRotation) < 0.1f)
             {
                 planet.transform.rotation = targetRotation;

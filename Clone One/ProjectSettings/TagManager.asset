@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Bear
+  - planet
   layers:
   - Default
   - TransparentFX
@@ -12,7 +13,7 @@ TagManager:
   - ship
   - Water
   - UI
-  - 
+  - planet
   - 
   - 
   - 
