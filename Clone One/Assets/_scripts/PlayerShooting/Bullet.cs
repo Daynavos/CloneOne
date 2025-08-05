@@ -2,16 +2,21 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-	public float speed = 20f;
-	private Vector3 targetDirection;
 
-	public void SetTarget(Vector3 target)
-	{
-		targetDirection = (target - transform.position).normalized;
-	}
+	public float lifeTime = 2f;
+	private float timer = 0f;
 
 	void Update()
 	{
-		transform.position += targetDirection * speed * Time.deltaTime;
+		timer += Time.deltaTime;
+		if (timer >= lifeTime)
+		{
+			Destroy(gameObject);
+		}
+	}
+
+	void OnCollisionEnter(Collision collision)
+	{
+		Destroy(gameObject);
 	}
 }
