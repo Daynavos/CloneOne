@@ -8,12 +8,10 @@ public class GameStateMan : MonoBehaviour
     {
         Cube,
         Yoyo,
-        Bear
+        Bear,
+        done
     }
     
-    public bool CUBEobjCollected = false;
-    public bool YOYOobjCollected = false;
-    public bool BEARobjCollected = false;
     
     public Button cubeButton;
     public Button yoyoButton;
@@ -25,15 +23,53 @@ public class GameStateMan : MonoBehaviour
     
     public MapState currentMAPstate = MapState.Cube;
 
+    public GameObject start;
     public GameObject map;
+    public GameObject end;
     void Start()
     {
         currentMAPstate = MapState.Cube;
         updateMap();
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ShowEndScreen();
+        }
+    }
+
+    public void startButton()
+    {
+        start.SetActive(false);
+        map.SetActive(true);
+    }
+
+    public void endGame()
+    {
+        Application.Quit();
+    }
+
+    void ShowEndScreen()
+    {
+        if (!end.active)
+        {
+            end.SetActive(true);
+        }
+        else
+        {
+            end.SetActive(false);
+        }
+        
+    }
+
     public void goToMap()
     {
+        if (currentMAPstate == MapState.done)
+        {
+            ShowEndScreen();
+        }
         map.SetActive(true);
         cubePlanet.SetActive(false);
         yoyoPlanet.SetActive(false);
@@ -63,6 +99,7 @@ public class GameStateMan : MonoBehaviour
         map.SetActive(false);
         Time.timeScale = 1;
         bearPlanet.SetActive(true);
+        currentMAPstate = MapState.done;
     }
 
     void updateMap()
