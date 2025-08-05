@@ -26,6 +26,7 @@ public class FlightController : MonoBehaviour
 
     private LineRenderer lineRenderer;
     private bool isAbducting = false;
+    public bool beaming = false;
     
     public GameObject LeftClickStateObject;
     private LeftClickState leftClickState;
@@ -162,8 +163,11 @@ public class FlightController : MonoBehaviour
                     var bearObject = hit.collider.gameObject; 
                     float step = speed * Time.deltaTime;
                     bearObject.transform.position = Vector3.MoveTowards(bearObject.transform.position, ship.transform.position, step);
-
-                    gameStateMan.goToMap();
+                    beaming = true;
+                }
+                else
+                {
+                    beaming = false;
                 }
             }
         }

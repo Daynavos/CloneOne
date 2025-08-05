@@ -34,7 +34,6 @@ public class GameStateMan : MonoBehaviour
 
     public void goToMap()
     {
-        return;
         map.SetActive(true);
         cubePlanet.SetActive(false);
         yoyoPlanet.SetActive(false);

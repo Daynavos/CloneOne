@@ -267,7 +267,8 @@ GameObject:
   - component: {fileID: 335090870}
   - component: {fileID: 335090869}
   - component: {fileID: 335090868}
-  - component: {fileID: 335090867}
+  - component: {fileID: 335090871}
+  - component: {fileID: 335090872}
   m_Layer: 3
   m_Name: Plane
   m_TagString: Player
@@ -275,27 +276,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!65 &335090867
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 335090866}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &335090868
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -365,6 +345,43 @@ Transform:
   - {fileID: 605832565}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &335090871
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335090866}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.94247955
+  m_Height: 1.9465257
+  m_Direction: 1
+  m_Center: {x: 0.03865762, y: -0.21009152, z: -0.23408194}
+--- !u!114 &335090872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335090866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b503a5cc4a7db2c40803d12aeaae0789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManObj: {fileID: 2133233916}
+  flightObj: {fileID: 1384587146}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,6 +635,7 @@ GameObject:
   - component: {fileID: 891321975}
   - component: {fileID: 891321974}
   - component: {fileID: 891321973}
+  - component: {fileID: 891321977}
   m_Layer: 0
   m_Name: Collect
   m_TagString: Bear
@@ -710,12 +728,39 @@ Transform:
   m_GameObject: {fileID: 891321972}
   serializedVersion: 2
   m_LocalRotation: {x: -0.025099793, y: -0.0022140932, z: 0.08784251, w: 0.9958157}
-  m_LocalPosition: {x: -1.9364754, y: 3.8398416, z: -5.3395977}
+  m_LocalPosition: {x: -1.93, y: 3.83, z: -5.59}
   m_LocalScale: {x: 0.21182968, y: 0.09628623, z: 0.21182968}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 989584833}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &891321977
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 891321972}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &919547938
 GameObject:
   m_ObjectHideFlags: 0
@@ -1263,6 +1308,7 @@ MonoBehaviour:
   maxScale: 1.6
   cam: {fileID: 330585545}
   bullet: {fileID: 7719168344578057922, guid: 439e327feea1db148b4c14a90d7add0c, type: 3}
+  beaming: 0
   LeftClickStateObject: {fileID: 2133233916}
   GameManagerObj: {fileID: 2133233916}
   speed: 1
