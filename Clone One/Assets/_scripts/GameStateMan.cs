@@ -64,8 +64,15 @@ public class GameStateMan : MonoBehaviour
         
     }
 
+    public GameObject[] strays;
     public void goToMap()
     {
+        strays = GameObject.FindGameObjectsWithTag("Projectile");
+        foreach (GameObject stray in strays)
+        {
+            Destroy(stray);
+        }
+        
         if (currentMAPstate == MapState.done)
         {
             ShowEndScreen();

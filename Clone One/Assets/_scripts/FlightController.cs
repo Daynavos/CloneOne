@@ -76,6 +76,13 @@ public class FlightController : MonoBehaviour
         
         lineRenderer.enabled = false;
     }
+
+    public AudioSource shoot;
+    public AudioSource beam;
+    
+    public Animator planetAnim;
+    
+    public ParticleSystem upParticles;
     void Update()
     {
         //MOVE
@@ -83,13 +90,29 @@ public class FlightController : MonoBehaviour
         
         //TURN
         planet.transform.Rotate(ship.transform.right.normalized, -moveInput.y * rotationSpeed * Time.deltaTime, Space.World);
+        
+        //////////////////////////////////
+        /// ///////////////////////////
+        ////////////////////////////
+        /// HERE IS ANIMATIONS////
+        bool left = Input.GetKey(KeyCode.D);
+        bool right = Input.GetKey(KeyCode.A);
 
+        planetAnim.SetBool("Left", left);
+        planetAnim.SetBool("Right", right);
+        ////////////////////////////////////
+        /// /////////////////////////////////
+        /// /////////////////////////////
+        /// //////////////////////////
+        
+        
         //ZOOM
         if (zoomInput != 0)
         {
             Vector3 newScale = planet.transform.localScale + Vector3.one * zoomInput * zoomSpeed * Time.deltaTime;
             newScale = Vector3.Max(Vector3.one * minScale, Vector3.Min(Vector3.one * maxScale, newScale));
             planet.transform.localScale = newScale;
+            upParticles.Play();
         }
         
         //MOVE with CLICK
@@ -111,6 +134,7 @@ public class FlightController : MonoBehaviour
             //SHOOT
             if (leftClickState.currentLCstate == LeftClickState.leftClickState.bullet)
             {
+                shoot.Play();
                 Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
 
                 Vector3 direction;
@@ -150,6 +174,7 @@ public class FlightController : MonoBehaviour
 
         if (isAbducting)
         {
+            beam.Play();
             Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
             if (Physics.Raycast(ray, out RaycastHit hit))
             {

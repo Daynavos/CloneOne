@@ -13,6 +13,6 @@ public class BulletScript : MonoBehaviour
             target.TakeDamage(damage); // Adjusted to match the method signature
         }
 
-        //Destroy(gameObject);
+        Destroy(gameObject);
     }
 }
