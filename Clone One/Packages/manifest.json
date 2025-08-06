@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.dgreenheck.openfracture": "https://github.com/dgreenheck/OpenFracture.git",
+    "com.dgreenheck.openfracture": "file:C:/Users/mikis/Documents/2025 - Uni/OpenFracture-main",
     "com.unity.ai.navigation": "2.0.8",
     "com.unity.collab-proxy": "2.8.2",
     "com.unity.ide.rider": "3.0.36",
